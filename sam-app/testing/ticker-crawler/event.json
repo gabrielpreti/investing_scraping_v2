@@ -1,0 +1,20 @@
+{
+  "Records": [
+    {
+      "messageId": "",
+      "receiptHandle": "",
+      "body": "{\"stock_code\": \"bradesco-on-n1\"}",
+      "attributes": {
+        "ApproximateReceiveCount": "1",
+        "SentTimestamp": "",
+        "SenderId": "",
+        "ApproximateFirstReceiveTimestamp": ""
+      },
+      "messageAttributes": {},
+      "md5OfBody": "368b08717006e0f2c4b564476cd265b8",
+      "eventSource": "aws:sqs",
+      "eventSourceARN": "",
+      "awsRegion": "us-east-1"
+    }
+  ]
+}

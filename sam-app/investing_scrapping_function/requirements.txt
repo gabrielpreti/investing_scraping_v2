@@ -1,0 +1,7 @@
+requests
+regex
+urllib3
+lxml
+boto3
+datetime
+lxml

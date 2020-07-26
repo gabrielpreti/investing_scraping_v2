@@ -1,0 +1,76 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  Investing tickers scrapping
+
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Globals:
+  Function:
+    Timeout: 180
+
+Resources:
+  TickersCollectionFunction:
+    Type: AWS::Serverless::Function
+    DepensOn: TickersCollectionLogGroup
+    Properties:
+      FunctionName: "TickersCollectionFunction"
+      Role: arn:aws:iam::020010993578:role/iam_role_for_lambda
+      CodeUri: investing_scrapping_function
+      Handler: tickers-collection/app.lambda_handler
+      Runtime: python3.8
+      Environment:
+        Variables:
+          STOCK_PROCESS_QUEUE_ARN: "arn:aws:sqs:us-east-1:020010993578:stock_process_queue"
+          STOCK_PROCESS_QUEUE_ID: "https://sqs.us-east-1.amazonaws.com/020010993578/stock_process_queue"
+          STOCK_PROCESS_QUEUE_NAME: "stock_process_queue"
+          LOGGING_LEVEL: "INFO"
+      Events:
+        Collect:
+          Type: Schedule
+          Properties:
+            Schedule: rate(1 minute)
+#             Schedule: cron(0 23 * * MON-FRI *)
+  TickersCollectionLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Join ['/', ['/aws/lambda', !Ref TickersCollectionFunction]]
+      RetentionInDays: 7
+
+  TickerCrawlerFunction:
+    Type: AWS::Serverless::Function
+    DepensOn: TickerCrawlerLogGroup
+    Properties:
+      FunctionName: "TickerCrawlerFunction"
+      Role: arn:aws:iam::020010993578:role/iam_role_for_lambda
+      CodeUri: investing_scrapping_function
+      Handler: ticker-crawler/app.lambda_handler
+      Runtime: python3.8
+      Environment:
+        Variables:
+          CRAWLING_OUTPUT_BUCKET_NAME: "preti-stock-crawling-output"
+          LOGGING_LEVEL: "INFO"
+      Events:
+        StockTickerEvent:
+          Type: SQS
+          Properties:
+            Queue: "arn:aws:sqs:us-east-1:020010993578:stock_process_queue"
+            BatchSize: 10
+  TickerCrawlerLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Join ['/', ['/aws/lambda', !Ref TickerCrawlerFunction]]
+      RetentionInDays: 7
+
+Outputs:
+  TickersCollectionFunctionArn:
+    Description: "Tickers Collection Lambda Function ARN"
+    Value: !GetAtt TickersCollectionFunction.Arn
+  TickersCollectionFunctionName:
+    Description: "Tickers Collection Lambda Function ARN"
+    Value: !Ref TickersCollectionFunction
+  TickersCollectionFunctionIamRole:
+    Description: "Implicit IAM Role created for Tickers Collection function"
+    Value: !GetAtt TickersCollectionFunction.Arn
+  TickerCrawlerFunction:
+    Description: "Ticker Crawling Lambda Function ARN"
+    Value: !GetAtt TickerCrawlerFunction.Arn
