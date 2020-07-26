@@ -24,7 +24,7 @@ def lambda_handler(event, context):
                                        headers={'User-Agent': USER_AGENT})
     html_tree = html.fromstring(req.data.decode('utf-8'))
     stock_links_list = html_tree.xpath("//table[@id='cross_rate_markets_stocks_1']/tbody/tr/td[2]/a")
-    for stock_link in stock_links_list[:2]:
+    for stock_link in stock_links_list:
         stock = stock_link.get('href').split('/')[-1]
         send_message_to_queue(stock)
 

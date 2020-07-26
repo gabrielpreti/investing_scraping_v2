@@ -13,7 +13,7 @@ Resources:
     Type: AWS::Serverless::Function
     DepensOn: TickersCollectionLogGroup
     Properties:
-      FunctionName: "TickersCollectionFunction"
+      FunctionName: "investing-scraping-v2-TickersCollectionFunction"
       Role: arn:aws:iam::020010993578:role/iam_role_for_lambda
       CodeUri: investing_scrapping_function
       Handler: tickers-collection/app.lambda_handler
@@ -28,8 +28,8 @@ Resources:
         Collect:
           Type: Schedule
           Properties:
-            Schedule: rate(1 minute)
-#             Schedule: cron(0 23 * * MON-FRI *)
+#            Schedule: rate(1 minute)
+             Schedule: cron(0 23 ? * MON-FRI *)
   TickersCollectionLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
@@ -40,7 +40,7 @@ Resources:
     Type: AWS::Serverless::Function
     DepensOn: TickerCrawlerLogGroup
     Properties:
-      FunctionName: "TickerCrawlerFunction"
+      FunctionName: "investing-scraping-v2-TickerCrawlerFunction"
       Role: arn:aws:iam::020010993578:role/iam_role_for_lambda
       CodeUri: investing_scrapping_function
       Handler: ticker-crawler/app.lambda_handler
