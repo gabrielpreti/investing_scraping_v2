@@ -29,12 +29,12 @@ Resources:
           Type: Schedule
           Properties:
 #            Schedule: rate(1 minute)
-             Schedule: cron(0 23 ? * MON-FRI *)
+             Schedule: cron(30 21 ? * MON-FRI *)
   TickersCollectionLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
       LogGroupName: !Join ['/', ['/aws/lambda', !Ref TickersCollectionFunction]]
-      RetentionInDays: 7
+      RetentionInDays: 14
 
   TickerCrawlerFunction:
     Type: AWS::Serverless::Function
