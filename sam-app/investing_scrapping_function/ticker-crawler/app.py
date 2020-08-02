@@ -7,6 +7,7 @@ import re
 import datetime
 import unicodedata
 from lxml import html
+import time
 
 BASE_URL = "https://br.investing.com/equities"
 USER_AGENT = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36'
@@ -36,6 +37,7 @@ def lambda_handler(event, context):
         LOGGER.debug("Putting %s to key %s", crawled_stock_data, key)
         s3_bucket.put_object(Body=crawled_stock_data, Key=key, StorageClass="STANDARD_IA")
         LOGGER.info("Stored object %s in s3", key)
+        time.sleep(10)  # this is for us not be banned from our destiny
 
 
 #######################################################################################################################
@@ -63,6 +65,7 @@ def get_stock_info_dict(connection_pool, stock):
 
 def get_stock_info_json(connection_pool, stock):
     return json.dumps(get_stock_info_dict(connection_pool, stock))
+
 
 #######################################################################################################################
 #######################################################################################################################
@@ -137,7 +140,7 @@ def parse_stock_finance_finance(connection_pool, stock):
         for div in data:
             spans = div.getchildren()
             item, value, complement = (
-            spans[0].text_content(), spans[2].text_content().strip(), spans[1].text_content().strip())
+                spans[0].text_content(), spans[2].text_content().strip(), spans[1].text_content().strip())
             LOGGER.debug("\t%s=%s\t%s" % (item, value, complement))
             set_dict_key_value(title_dict, item, (value, complement))
 
@@ -277,7 +280,7 @@ def technical_technical_analysis(connection_pool, stock):
 
             moving_avg_summ = summary_table_line[2].getchildren()
             x, y = (
-            moving_avg_summ[0].text_content(), moving_avg_summ[1].text_content().replace('(', '').replace(')', ''))
+                moving_avg_summ[0].text_content(), moving_avg_summ[1].text_content().replace('(', '').replace(')', ''))
             set_dict_key_value(periodname_resumo_name_dict, x, y)
             LOGGER.debug("\t\t\t%s=%s" % (x, y))
 
@@ -366,8 +369,8 @@ def technical_candlestick_pattern(connection_pool, stock):
     candlestickpatterns_dict = set_dict_key_value(tecnical_candlestick_pattern_data, 'Candlestick Patterns', {})
     html_tree = generate_html_tree(connection_pool=connection_pool, url='%s/%s-candlestick' % (BASE_URL, stock))
     candlestick_patterns_table = \
-    html_tree.xpath('//table[@class="genTbl closedTbl ecoCalTbl patternTable js-csp-table"]')[
-        0]
+        html_tree.xpath('//table[@class="genTbl closedTbl ecoCalTbl patternTable js-csp-table"]')[
+            0]
     headers = [x.text_content().strip() for x in candlestick_patterns_table.xpath('thead/tr/th')]
     patterns = candlestick_patterns_table.xpath('tbody/tr[@id]')
     for p in patterns:

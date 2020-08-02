@@ -2,7 +2,7 @@
 resource "aws_sqs_queue" "stock_process_queue" {
   name = "stock_process_queue"
   receive_wait_time_seconds = 20
-  visibility_timeout_seconds = 180
+  visibility_timeout_seconds = 900
   redrive_policy = jsonencode({
     deadLetterTargetArn = aws_sqs_queue.stock_process_queue_dlq.arn
     maxReceiveCount    = 4

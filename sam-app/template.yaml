@@ -6,7 +6,7 @@ Description: >
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
   Function:
-    Timeout: 180
+    Timeout: 600
 
 Resources:
   TickersCollectionFunction:
@@ -54,7 +54,7 @@ Resources:
           Type: SQS
           Properties:
             Queue: "arn:aws:sqs:us-east-1:020010993578:stock_process_queue"
-            BatchSize: 10
+            BatchSize: 5
   TickerCrawlerLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
