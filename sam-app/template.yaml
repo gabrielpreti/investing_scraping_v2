@@ -34,7 +34,7 @@ Resources:
     Type: AWS::Logs::LogGroup
     Properties:
       LogGroupName: !Join ['/', ['/aws/lambda', !Ref TickersCollectionFunction]]
-      RetentionInDays: 14
+      RetentionInDays: 30
 
   TickerCrawlerFunction:
     Type: AWS::Serverless::Function
@@ -59,7 +59,7 @@ Resources:
     Type: AWS::Logs::LogGroup
     Properties:
       LogGroupName: !Join ['/', ['/aws/lambda', !Ref TickerCrawlerFunction]]
-      RetentionInDays: 7
+      RetentionInDays: 30
 
 Outputs:
   TickersCollectionFunctionArn:
